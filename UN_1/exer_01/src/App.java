@@ -32,13 +32,13 @@ public class App{
     public static void showMap(){
         String stt = "A2";
 
-        for (int i = 0; i < teste.size(); i++) {
-            for (int j = 0; j < stt.length(); j++) {
-            
+        for (int i = 0; i < 5; i++) {
+            System.err.println("");
+            for (int j = 0; j < i; j++) {
+                System.err.print("*");
             }
         }
-        
-
+    
     }
 
 }
