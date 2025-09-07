@@ -4,7 +4,7 @@
 */
 
 import java.util.Scanner;
-public class Uni3Exe01 {
+public class Uni3Exe06 {
 
     public static double valar(double qtd) {
         return (qtd - 0.75) * 25;

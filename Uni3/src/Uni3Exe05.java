@@ -6,7 +6,7 @@
  *  */
 
 import java.util.Scanner;
-public class Uni3Exe01 {
+public class Uni3Exe05 {
 
     public static double total(int qtd) {
         return (3.5 * 2 + 4) * qtd;
