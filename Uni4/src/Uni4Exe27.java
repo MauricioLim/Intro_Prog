@@ -1,68 +1,31 @@
 import java.util.Scanner;
 
 public class Uni4Exe27 {
-    Scanner teclado = new Scanner(System.in);
-    int horaCheg, minCheg, horaSai, minSai;
-
-    public Uni4Exe27(){
-        entrada();
-        verifica();
-    }
-
-    public void entrada(){
-        System.out.print("hora chegada: ");
-        this.horaCheg = teclado.nextInt();
-
-        System.out.print("minutos chegada: ");
-        this.minCheg = teclado.nextInt();
-
-        System.out.print("hora saida: ");
-        this.horaSai = teclado.nextInt();
-
-        System.out.print("Minutos chegada: ");
-        this.minSai = teclado.nextInt();
-    }
-
-    public void verifica() {
-        if (!(horaCheg < 0 || horaCheg > 23 || horaSai < 0 || horaSai > 23 ||  minCheg < 0 ||    minCheg > 59 || minSai < 0 || minSai > 59)) {
-            valor();
-        } else{
-            System.out.println("Horario não permitido");
-        }
-    }
-
-    public void valor(){
-        int chegadaMin = this.horaCheg * 60 + this.minCheg;
-        int saidaMin = this.horaSai * 60 + this.minCheg;
-        int tempoTotal = saidaMin - chegadaMin;
-
-        int horas = tempoTotal / 60;
-        int minutosRestantes = tempoTotal % 60;
-
-        if (minutosRestantes < 30) {
-            if (horas > 0 && horas <= 2) {
-                System.out.printf("Preço cobrado = R$%.2f", (horas * 5));
-            } else if (horas > 2 && horas <= 4){
-                System.out.printf("Preço cobrado = R$%.2f", (horas * 7.5));
-            } else if (horas > 4){
-                System.out.printf("Preço cobrado = R$%.2f", (horas * 10));
-            }
-        } else if (minutosRestantes >= 30){
-            if (horas > 0 && horas <= 2) {
-                System.out.printf("Preço cobrado = R$%.2f", ((horas  + 1)* 5));
-            } else if (horas > 2 && horas <= 4){
-                System.out.printf("Preço cobrado = R$%.2f", ((horas  + 1) * 7.5));
-            } else if (horas > 4){
-                System.out.printf("Preço cobrado = R$%.2f", ((horas  + 1) * 10));
-            }
-        } else if (horas > 0 && minutosRestantes > 0){
-            System.out.printf("Preço cobrado = R$5");
-        }
-        
-    }
-
     public static void main(String[] args) {
-        new Uni4Exe27();
-        
+         Scanner sc = new Scanner(System.in);
+
+        System.out.print("Digite o valor de n (maior que 2): ");
+        int n = sc.nextInt();
+
+        if (n <= 2) {
+            System.out.println("O valor de n deve ser maior que 2.");
+        } else {
+            int primeiro = 8; // primeiro termo do par
+            int contador = 0; // total de números impressos
+
+            for (; contador < n; primeiro *= 2) { // dobra a cada novo par
+                // imprime o primeiro termo do par
+                System.out.print(primeiro);
+                contador++;
+
+                if (contador == n) break;
+
+                // imprime o segundo termo (primeiro + 2)
+                System.out.print(", " + (primeiro + 2));
+                contador++;
+
+                if (contador < n) System.out.print(", ");
+            }
+        }
     }
 }
