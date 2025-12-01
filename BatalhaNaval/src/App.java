@@ -1,16 +1,181 @@
+import java.text.DecimalFormat;
 import java.util.Random;
 import java.util.Scanner;
 
 public class App {
 
     public App(){
-        //Scanner teclado = new Scanner(System.in);
+        Scanner teclado = new Scanner(System.in);
         char[][] posicao = new char[8][8];
+        char[][] jogador = new char[8][8];
+        
 
         posicao = preencherVetor(posicao);
         posicao = posicionarNavios(posicao);
-        mostrar(posicao);
+        jogador = preencherVetor(jogador);
 
+        jogadas(jogador, teclado, posicao);
+
+    }
+
+    private String taxaAcerto(int acertos, int tentativas){
+        DecimalFormat df = new DecimalFormat("0.00");
+        
+        if (tentativas == 0) {
+            return "0.00";
+        }
+        
+        double taxa = (double) acertos / tentativas * 100;
+        return df.format(taxa);
+    }
+
+    private void jogadas(char[][] jogador, Scanner teclado, char[][] posicao) {
+        int linha = 0;
+        int coluna = 0;
+        int tentativas = 0;
+        int destruidos = 0;
+        int portaAvioes = 0;
+        int cruzador = 0;
+        int destroyer = 0;
+        boolean[][] jogadas = new boolean[8][8];
+        int acertos = 0;
+        int erros = 0;
+
+        int portaAvioesDestruidos = 0;
+        int cruzadorDestruidos = 0;
+        int destroyerDestruidos = 0;
+        int submarinosDestruidos = 0;
+
+
+        do{ //TENTATIVAS DO USUÁRIO 
+            do { //VALIDAÇÃO DE LINHAS E COLUNAS
+                System.out.println();
+                System.out.println("Tentativa "+ tentativas +"/30 | Acertos: "+ acertos + " | Taxa: " + taxaAcerto(acertos, tentativas));
+                System.out.println();
+                mostrar(jogador);
+                System.out.println();
+                System.out.print("Digite a linha (0-7): ");
+                linha = teclado.nextInt();
+                System.out.print("Digite a coluna (0-7): ");
+                coluna = teclado.nextInt();
+
+                if (linha < 0 || linha > 7 || coluna < 0 || coluna > 7) {
+                    System.out.println("Posição inválida! Digite valores entre 0 e 7.");
+                }else if (jogadas[linha][coluna]) {
+                    System.out.println("Você já jogou nessa posição.");
+                }
+
+            } while (linha < 0 || linha > 7 || coluna < 0 || coluna > 7 || jogadas[linha][coluna]);
+            //ADICONA A POSICAO JOGADA
+            jogadas[linha][coluna] = true;
+            
+            if (posicao[linha][coluna] != '~') {
+                acertos++;
+
+                System.out.println("ACERTOU! Um navio foi atingido");
+                jogador[linha][coluna] = 'A';
+                //VERIFICA O QUE FOI ACERTADO
+                if (posicao[linha][coluna] == 'P') {
+                    portaAvioes += 1;
+                }
+                if (posicao[linha][coluna] == 'C') {
+                    cruzador += 1;
+                }
+                if (posicao[linha][coluna] == 'D') {
+                    destroyer += 1;
+                }
+                if (posicao[linha][coluna] == 'S') {
+                    System.out.println("AFUNDOU! Você destruiu um Submarino");
+                    destruidos ++;
+                    submarinosDestruidos += 1;
+                }
+                //MENSAGEM DE AFUNDAR UM NAVIO COM MAIS DE UMA CELULA
+                if (portaAvioes == 4) {
+                    System.out.println("AFUNDOU! Você destruiu um Destroyer");
+                    destruidos ++;
+                    portaAvioes = 0;
+                    portaAvioesDestruidos += 1;
+                }else if (cruzador == 3) {
+                    System.out.println("AFUNDOU! Você destruiu um Cruzador");
+                    destruidos ++;
+                    cruzador = 0;
+                    cruzadorDestruidos += 1;
+                }else if (destroyer == 2) {
+                    System.out.println("AFUNDOU! Você destruiu um Destroyer");
+                    destruidos ++;
+                    destroyer = 0;
+                    destroyerDestruidos += 1;
+                }
+                tentativas++;
+            } else{
+                System.out.print("ERROU! Nenhum navio atingido");
+                jogador[linha][coluna] = 'X';
+                tentativas++; 
+                erros++;
+            }
+        }while(tentativas < 30 && destruidos < 10);
+
+        fimDeJogo(acertos, destruidos, erros, posicao, tentativas, destroyerDestruidos, portaAvioesDestruidos, submarinosDestruidos, cruzadorDestruidos);
+
+    }
+
+    private void fimDeJogo(int acertos, int destruidos, int erros, char[][] posicao, int tentativas, int destroyerDestruidos, int portaAvioesDestruidos, int submarinosDestruidos, int cruzadorDestruidos) {
+        System.out.println();
+        mostrar(posicao);
+        System.out.println();
+        System.out.println("====================================");
+        System.out.println("         ESTATISTICAS FINAIS      ");
+        System.out.println("====================================");
+        System.out.println();
+
+        if (tentativas == 30 && destruidos == 10) {
+            System.out.println("Status: VITORIA!");
+        } else if (tentativas == 30 && destruidos != 10) {
+            System.out.println("Status: DERROTA!");
+        }
+
+        System.out.println("Tentativas usadas: " + tentativas + "/30");
+        System.out.println("Total de acertos: " + acertos);
+        System.out.println("Total de erros: " + erros);
+        System.out.println("Taxa de acerto: " + taxaAcerto(acertos, tentativas));
+        System.out.println();
+        System.out.println("Navios afundados: "+ destruidos +"/10");
+
+        System.out.println(" - Porta-aviões: "+ portaAvioesDestruidos + "/1");
+        System.out.println(" - Cruzadores: "+ cruzadorDestruidos + "/2");
+        System.out.println(" - Destroyers: "+ destroyerDestruidos + "/3");
+        System.out.println(" - Submarinos: "+ submarinosDestruidos + "/4");
+
+        System.out.println();
+        System.out.println("PONTUACAO FINAL: " + pontuacao(acertos, destruidos, erros, tentativas) + " pontos");
+        System.out.println( "- Acertos: " + acertos + " x 10 = " + (acertos * 10));
+        System.out.println( "- Navios afundados: " + destruidos + " x 50 = " + (destruidos * 50));
+        System.out.println( "- Penalidades erros: " + erros + " x -2 = " + (erros * -2));
+        if (tentativas < 25){
+            System.out.println("- Bônus vitória rápida: +100");
+        }
+        System.out.println("Classificação: " + classificacao(pontuacao(acertos, cruzadorDestruidos, erros, tentativas)));
+
+    }
+
+    private String classificacao(int pontuacao) {
+        if (pontuacao > 400) {
+            return "Excelente";
+        } else if(pontuacao > 299 && pontuacao < 401){
+            return "Bom";
+        } else if(pontuacao > 199 && pontuacao < 300){
+            return "Regular";
+        } else{
+            return "Precisa melhorar";
+        }
+    }
+
+    private int pontuacao(int acertos, int destruidos, int erros, int tentativas) {
+        if(tentativas < 25){
+            return ((acertos * 10) + (destruidos * 50) - (erros * 2) + 100);
+        } else{
+            return ((acertos * 10) + (destruidos * 50) - (erros * 2));
+        }
     }
 
     private char[][] posicionarNavios(char[][] posicao) {
